@@ -6,8 +6,12 @@ import dotenv from 'dotenv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+// Load environment variables (Vercel provides them automatically, but this is safe to call)
+try {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+} catch (error) {
+  // Ignore errors in serverless environment where .env might not exist
+}
 
 /**
  * Server configuration

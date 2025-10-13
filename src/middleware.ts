@@ -6,17 +6,23 @@ import { SERVER, PROXY, LOGGING } from './config/constants.js';
 // ==================== LOGGER MIDDLEWARE ====================
 
 // Create a pino logger instance
-export const logger = pino.default({
-  level: LOGGING.LEVEL,
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'SYS:standard',
-      ignore: 'pid,hostname',
-    },
-  },
-});
+// Note: pino-pretty transport doesn't work in serverless environments
+// Use basic logger for production/serverless
+export const logger = SERVER.IS_PRODUCTION || process.env.VERCEL 
+  ? pino.default({
+      level: LOGGING.LEVEL,
+    })
+  : pino.default({
+      level: LOGGING.LEVEL,
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'SYS:standard',
+          ignore: 'pid,hostname',
+        },
+      },
+    });
 
 /**
  * Request logger middleware for Express
