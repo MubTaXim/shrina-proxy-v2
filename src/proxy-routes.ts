@@ -599,6 +599,27 @@ async function proxyRequest(req: Request, res: Response, next: NextFunction) {
     // Set host header to match target URL
     headers['host'] = targetUrl.host;
     
+    // Handle custom headers from query parameter
+    if (req.query.headers) {
+      try {
+        const customHeaders = JSON.parse(decodeURIComponent(req.query.headers as string));
+        if (typeof customHeaders === 'object' && customHeaders !== null) {
+          Object.assign(headers, customHeaders);
+          logger.debug({
+            type: 'proxy',
+            url,
+            customHeaders
+          }, 'Applied custom headers from query parameter');
+        }
+      } catch (error) {
+        logger.warn({
+          type: 'proxy',
+          url,
+          error: error instanceof Error ? error.message : String(error)
+        }, 'Failed to parse custom headers from query parameter');
+      }
+    }
+    
     // Explicitly handle Range header for audio segments
     if (req.headers.range) {
       headers['range'] = req.headers.range as string;
