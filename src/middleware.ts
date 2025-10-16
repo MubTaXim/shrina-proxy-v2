@@ -162,13 +162,11 @@ const honoAdapter = (middleware: any) => {
  */
 export const corsMiddleware = honoAdapter(
   honoCors({
-    origin: PROXY.ALLOWED_ORIGINS.includes('*') 
-      ? '*' 
-      : PROXY.ALLOWED_ORIGINS,
+    origin: '*', // Allow all origins for proxy functionality
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Range'],
     exposeHeaders: ['Content-Length', 'Content-Range', 'Content-Type', 'Accept-Ranges'],
-    credentials: true,
+    credentials: false, // Set to false when using wildcard origin
     maxAge: 86400, // 24 hours
   })
 );

@@ -22,6 +22,21 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(corsMiddleware);
 app.use(requestLogger);
 
+// Explicit CORS headers middleware for all responses
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Range');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Content-Type, Accept-Ranges');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  
+  next();
+});
+
 
 // Set up routes
 app.use(ROUTES.PROXY_BASE, proxyRoutes);
